@@ -1,0 +1,21 @@
+#include <iostream>
+#include <string>
+using namespace std;
+void DeleteChar(string text)
+{
+    text.erase(text.begin() + 6);
+
+    cout <<"After deleting the character : "<<endl;
+    cout << text;
+}
+int main()
+{
+    string text= "Hello World!";
+
+    cout << "Before deleting the character : "<<endl;
+    cout << text << endl;
+
+    DeleteChar(text);
+
+    return 0;
+}

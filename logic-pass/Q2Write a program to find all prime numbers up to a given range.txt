@@ -1,0 +1,28 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int x,y,max=0;
+
+    cout << "Enter the range of numbers you want to find the prime numbers for :" << endl;
+
+    cout << "NOTE* The first number must be smaller then the second one *"<<endl;
+
+    cout << "From -";
+    cin >> x;
+
+    cout <<"To -";
+    cin >> y;
+
+    for (int i = x; i<= y; i++)
+    {
+        if (i % 2 != 0)
+        {
+            cout<< i <<endl;
+        }
+        max = max + 1;
+    }
+    cout << "There are (" << max << ")prime numbers";
+    
+}

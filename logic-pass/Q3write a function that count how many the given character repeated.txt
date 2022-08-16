@@ -1,0 +1,30 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int RepeatedChar()
+{
+string s;char x;int r=0;
+
+cout<<"Enter a text :"<<endl;
+getline(cin,s);
+
+cout<<"Enter the character that you want check for repeat :"<<endl;
+cin>>x;
+
+for (int i=0;i<s.length();i++)
+  {
+   if (s[i] == x)
+    {
+     r++;
+    }
+  }
+  
+cout <<"The time's that the character was repeated are :"<<endl;
+return r;
+}
+int main()
+{
+cout<<RepeatedChar()<< endl;
+return 0;
+}
