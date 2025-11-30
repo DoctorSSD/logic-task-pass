@@ -35,6 +35,8 @@ class AgencyManagerApp:
     def __init__(self, master: tk.Tk) -> None:
         self.master = master
         self.master.title("Agency Manager")
+        self.master.minsize(960, 640)
+        self.apply_styles()
         self.clients = []
         self.current_client_index = None
         self.current_pipeline = "Script"
@@ -81,27 +83,57 @@ class AgencyManagerApp:
         for pipeline in PIPELINES.keys():
             client["pipelines"].setdefault(pipeline.lower().replace(" ", "_"), [])
 
+    def apply_styles(self) -> None:
+        """Configure a simple, modern visual style."""
+        style = ttk.Style()
+        try:
+            style.theme_use("clam")
+        except tk.TclError:
+            pass
+
+        accent = "#2a73cc"
+        bg = "#f4f6fb"
+        style.configure("TFrame", background=bg)
+        style.configure("TLabel", background=bg, foreground="#1f2937")
+        style.configure("Header.TLabel", font=("Segoe UI", 14, "bold"), foreground=accent)
+        style.configure("Section.TLabel", font=("Segoe UI", 11, "bold"))
+        style.configure("TButton", padding=6)
+        style.map("TButton", foreground=[("active", "#0f172a")])
+        style.configure("Treeview", rowheight=24)
+        style.configure("TNotebook", background=bg)
+        style.configure("TNotebook.Tab", padding=(10, 6))
+
+        self.master.configure(background=bg)
+
     # -------------------------- UI Building --------------------------
     def build_ui(self) -> None:
         """Build the main UI layout."""
-        main_frame = tk.Frame(self.master)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        main_frame = ttk.Frame(self.master, padding=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
 
-        left_frame = tk.Frame(main_frame, width=200)
-        left_frame.pack(side=tk.LEFT, fill=tk.Y)
+        left_frame = ttk.Frame(main_frame, width=220)
+        left_frame.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10))
 
-        tk.Label(left_frame, text="Clients", font=("Arial", 12, "bold")).pack(anchor=tk.W)
-        self.client_listbox = tk.Listbox(left_frame, height=20)
+        ttk.Label(left_frame, text="Clients", style="Header.TLabel").pack(anchor=tk.W, pady=(0, 4))
+        self.client_listbox = tk.Listbox(
+            left_frame,
+            height=22,
+            relief=tk.FLAT,
+            borderwidth=1,
+            highlightthickness=1,
+            highlightcolor="#d1d5db",
+            highlightbackground="#d1d5db",
+        )
         self.client_listbox.pack(fill=tk.BOTH, expand=True, pady=5)
         self.client_listbox.bind("<<ListboxSelect>>", self.on_client_select)
 
-        btn_frame = tk.Frame(left_frame)
-        btn_frame.pack(fill=tk.X, pady=5)
-        tk.Button(btn_frame, text="Add Client", command=self.new_client).pack(fill=tk.X, pady=2)
-        tk.Button(btn_frame, text="Edit Client", command=self.edit_client).pack(fill=tk.X, pady=2)
-        tk.Button(btn_frame, text="Delete Client", command=self.delete_client).pack(fill=tk.X, pady=2)
+        btn_frame = ttk.Frame(left_frame)
+        btn_frame.pack(fill=tk.X, pady=6)
+        ttk.Button(btn_frame, text="Add Client", command=self.new_client).pack(fill=tk.X, pady=2)
+        ttk.Button(btn_frame, text="Edit Client", command=self.edit_client).pack(fill=tk.X, pady=2)
+        ttk.Button(btn_frame, text="Delete Client", command=self.delete_client).pack(fill=tk.X, pady=2)
 
-        right_frame = tk.Frame(main_frame)
+        right_frame = ttk.Frame(main_frame)
         right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.notebook = ttk.Notebook(right_frame)
@@ -113,38 +145,42 @@ class AgencyManagerApp:
 
     def build_overview_tab(self) -> None:
         """Create Overview tab widgets."""
-        self.overview_tab = tk.Frame(self.notebook)
+        self.overview_tab = ttk.Frame(self.notebook)
         self.notebook.add(self.overview_tab, text="Overview")
 
-        form = tk.Frame(self.overview_tab)
-        form.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        form = ttk.Frame(self.overview_tab, padding=12)
+        form.pack(fill=tk.BOTH, expand=True)
 
-        tk.Label(form, text="Client Name").grid(row=0, column=0, sticky=tk.W, pady=2)
-        self.name_entry = tk.Entry(form)
-        self.name_entry.grid(row=0, column=1, sticky=tk.EW, pady=2)
+        ttk.Label(form, text="Client Details", style="Section.TLabel").grid(
+            row=0, column=0, columnspan=2, sticky=tk.W, pady=(0, 6)
+        )
 
-        tk.Label(form, text="Business Name").grid(row=1, column=0, sticky=tk.W, pady=2)
-        self.business_entry = tk.Entry(form)
-        self.business_entry.grid(row=1, column=1, sticky=tk.EW, pady=2)
+        ttk.Label(form, text="Client Name").grid(row=1, column=0, sticky=tk.W, pady=2)
+        self.name_entry = ttk.Entry(form)
+        self.name_entry.grid(row=1, column=1, sticky=tk.EW, pady=2)
 
-        tk.Label(form, text="Phone / WhatsApp").grid(row=2, column=0, sticky=tk.W, pady=2)
-        self.phone_entry = tk.Entry(form)
-        self.phone_entry.grid(row=2, column=1, sticky=tk.EW, pady=2)
+        ttk.Label(form, text="Business Name").grid(row=2, column=0, sticky=tk.W, pady=2)
+        self.business_entry = ttk.Entry(form)
+        self.business_entry.grid(row=2, column=1, sticky=tk.EW, pady=2)
 
-        tk.Label(form, text="General Notes").grid(row=3, column=0, sticky=tk.NW, pady=2)
+        ttk.Label(form, text="Phone / WhatsApp").grid(row=3, column=0, sticky=tk.W, pady=2)
+        self.phone_entry = ttk.Entry(form)
+        self.phone_entry.grid(row=3, column=1, sticky=tk.EW, pady=2)
+
+        ttk.Label(form, text="General Notes").grid(row=4, column=0, sticky=tk.NW, pady=2)
         self.notes_text = tk.Text(form, height=6)
-        self.notes_text.grid(row=3, column=1, sticky=tk.EW, pady=2)
+        self.notes_text.grid(row=4, column=1, sticky=tk.EW, pady=2)
 
         form.columnconfigure(1, weight=1)
 
-        button_row = tk.Frame(self.overview_tab)
-        button_row.pack(fill=tk.X, padx=10, pady=10)
-        tk.Button(button_row, text="Save Client", command=self.save_client).pack(side=tk.LEFT, padx=5)
-        tk.Button(button_row, text="New Client", command=self.new_client).pack(side=tk.LEFT, padx=5)
+        button_row = ttk.Frame(self.overview_tab, padding=(12, 0, 12, 12))
+        button_row.pack(fill=tk.X)
+        ttk.Button(button_row, text="Save Client", command=self.save_client).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_row, text="New Client", command=self.new_client).pack(side=tk.LEFT, padx=5)
 
     def build_workflow_notes_tab(self) -> None:
         """Create Workflow Notes tab with sub-tabs."""
-        self.workflow_tab = tk.Frame(self.notebook)
+        self.workflow_tab = ttk.Frame(self.notebook)
         self.notebook.add(self.workflow_tab, text="Workflow Notes")
 
         self.workflow_notebook = ttk.Notebook(self.workflow_tab)
@@ -152,7 +188,7 @@ class AgencyManagerApp:
 
         self.workflow_texts = {}
         for key, label in zip(WORKFLOW_KEYS, ["Record", "Edit", "Design", "Marketing"]):
-            frame = tk.Frame(self.workflow_notebook)
+            frame = ttk.Frame(self.workflow_notebook, padding=8)
             self.workflow_notebook.add(frame, text=label)
             text_widget = tk.Text(frame, height=10)
             text_widget.pack(fill=tk.BOTH, expand=True)
@@ -160,13 +196,13 @@ class AgencyManagerApp:
 
     def build_task_board_tab(self) -> None:
         """Create Task Board tab UI components."""
-        self.task_tab = tk.Frame(self.notebook)
+        self.task_tab = ttk.Frame(self.notebook)
         self.notebook.add(self.task_tab, text="Task Board")
 
-        top_frame = tk.Frame(self.task_tab)
-        top_frame.pack(fill=tk.X, padx=10, pady=5)
+        top_frame = ttk.Frame(self.task_tab, padding=(10, 10, 10, 0))
+        top_frame.pack(fill=tk.X)
 
-        tk.Label(top_frame, text="Pipeline:").pack(side=tk.LEFT)
+        ttk.Label(top_frame, text="Pipeline:").pack(side=tk.LEFT)
         self.pipeline_combo = ttk.Combobox(top_frame, values=list(PIPELINES.keys()), state="readonly")
         self.pipeline_combo.set(self.current_pipeline)
         self.pipeline_combo.pack(side=tk.LEFT, padx=5)
@@ -182,44 +218,50 @@ class AgencyManagerApp:
             ["Title", "Sub-stage", "Assignee", "Status", "Due Date"],
         ):
             self.task_tree.heading(col, text=heading)
-            self.task_tree.column(col, width=120, anchor=tk.W)
+            self.task_tree.column(col, width=140, anchor=tk.W)
+        self.task_tree.tag_configure("odd", background="#f9fafb")
+        self.task_tree.tag_configure("even", background="#eef2ff")
         self.task_tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
         self.task_tree.bind("<<TreeviewSelect>>", self.on_task_select)
 
-        form = tk.Frame(self.task_tab)
-        form.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        form = ttk.Frame(self.task_tab, padding=10)
+        form.pack(fill=tk.BOTH, expand=True, padx=2, pady=(0, 10))
 
-        tk.Label(form, text="Title").grid(row=0, column=0, sticky=tk.W, pady=2)
-        self.task_title_entry = tk.Entry(form)
-        self.task_title_entry.grid(row=0, column=1, sticky=tk.EW, pady=2)
+        ttk.Label(form, text="Task Details", style="Section.TLabel").grid(
+            row=0, column=0, columnspan=2, sticky=tk.W, pady=(0, 6)
+        )
 
-        tk.Label(form, text="Sub-stage").grid(row=1, column=0, sticky=tk.W, pady=2)
+        ttk.Label(form, text="Title").grid(row=1, column=0, sticky=tk.W, pady=2)
+        self.task_title_entry = ttk.Entry(form)
+        self.task_title_entry.grid(row=1, column=1, sticky=tk.EW, pady=2)
+
+        ttk.Label(form, text="Sub-stage").grid(row=2, column=0, sticky=tk.W, pady=2)
         self.substage_combo = ttk.Combobox(form, state="readonly")
-        self.substage_combo.grid(row=1, column=1, sticky=tk.EW, pady=2)
+        self.substage_combo.grid(row=2, column=1, sticky=tk.EW, pady=2)
 
-        tk.Label(form, text="Assignee").grid(row=2, column=0, sticky=tk.W, pady=2)
-        self.task_assignee_entry = tk.Entry(form)
-        self.task_assignee_entry.grid(row=2, column=1, sticky=tk.EW, pady=2)
+        ttk.Label(form, text="Assignee").grid(row=3, column=0, sticky=tk.W, pady=2)
+        self.task_assignee_entry = ttk.Entry(form)
+        self.task_assignee_entry.grid(row=3, column=1, sticky=tk.EW, pady=2)
 
-        tk.Label(form, text="Status").grid(row=3, column=0, sticky=tk.W, pady=2)
+        ttk.Label(form, text="Status").grid(row=4, column=0, sticky=tk.W, pady=2)
         self.status_combo = ttk.Combobox(form, values=STATUS_OPTIONS, state="readonly")
-        self.status_combo.grid(row=3, column=1, sticky=tk.EW, pady=2)
+        self.status_combo.grid(row=4, column=1, sticky=tk.EW, pady=2)
 
-        tk.Label(form, text="Due Date (YYYY-MM-DD)").grid(row=4, column=0, sticky=tk.W, pady=2)
-        self.due_date_entry = tk.Entry(form)
-        self.due_date_entry.grid(row=4, column=1, sticky=tk.EW, pady=2)
+        ttk.Label(form, text="Due Date (YYYY-MM-DD)").grid(row=5, column=0, sticky=tk.W, pady=2)
+        self.due_date_entry = ttk.Entry(form)
+        self.due_date_entry.grid(row=5, column=1, sticky=tk.EW, pady=2)
 
-        tk.Label(form, text="Description").grid(row=5, column=0, sticky=tk.NW, pady=2)
+        ttk.Label(form, text="Description").grid(row=6, column=0, sticky=tk.NW, pady=2)
         self.task_description_text = tk.Text(form, height=4)
-        self.task_description_text.grid(row=5, column=1, sticky=tk.EW, pady=2)
+        self.task_description_text.grid(row=6, column=1, sticky=tk.EW, pady=2)
 
         form.columnconfigure(1, weight=1)
 
-        button_row = tk.Frame(self.task_tab)
-        button_row.pack(fill=tk.X, padx=10, pady=5)
-        tk.Button(button_row, text="New Task", command=self.new_task).pack(side=tk.LEFT, padx=5)
-        tk.Button(button_row, text="Save Task", command=self.save_task).pack(side=tk.LEFT, padx=5)
-        tk.Button(button_row, text="Delete Task", command=self.delete_task).pack(side=tk.LEFT, padx=5)
+        button_row = ttk.Frame(self.task_tab, padding=(10, 0, 10, 10))
+        button_row.pack(fill=tk.X)
+        ttk.Button(button_row, text="New Task", command=self.new_task).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_row, text="Save Task", command=self.save_task).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_row, text="Delete Task", command=self.delete_task).pack(side=tk.LEFT, padx=5)
 
         self.update_substage_options()
 
@@ -361,7 +403,8 @@ class AgencyManagerApp:
             return
         client = self.clients[self.current_client_index]
         tasks = client.get("pipelines", {}).get(self.get_pipeline_key(pipeline_name), [])
-        for task in tasks:
+        for idx, task in enumerate(tasks):
+            tag = "odd" if idx % 2 else "even"
             self.task_tree.insert(
                 "",
                 tk.END,
@@ -373,6 +416,7 @@ class AgencyManagerApp:
                     task.get("status", ""),
                     task.get("due_date", ""),
                 ),
+                tags=(tag,),
             )
 
     def new_task(self) -> None:
